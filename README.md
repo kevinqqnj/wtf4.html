@@ -40,11 +40,11 @@ class CommentForm(Form):
     submit = SubmitField(u'提交')
 ```
 
-The styles and format of form are defined in wtf.html, it's in your Flask-bootstrap install directly. 
-e.g.: *C:\git\tianya\venv\Lib\site-packages\flask_bootstrap\templates\bootstrap\wtf.html
+The styles and format of form are defined in wtf.html, it's in your Flask-bootstrap install directly.
+> e.g. C:\git\tianya\venv\Lib\site-packages\flask_bootstrap\templates\bootstrap\wtf.html
 
 ## Install and how to use
-1. simplely clone this git to local, it's an Flask framework. Or just copy '/app/templates/_wtf4.html' to you Flask template directory
+1. simplely clone this git to local, it's a well-formed Flask framework, and included local Bootstrap4 CSS. Or just copy '/app/templates/_wtf4.html' to you Flask template directory
 > e.g. C:\git\tianya\app\templates\
 
 2. use the macro in your html like this
