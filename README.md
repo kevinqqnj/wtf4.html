@@ -16,11 +16,13 @@ To quickly render out form with latest Bootstrap4 styes, by customized wtf.html 
 ## Background
 We know Flask-bootstrap provides a macro to quickly render out a form by one line:
 > /app/forms.py
+
 ```
 class CommentForm(Form):
-  ...
-
-/tempelate/about.html:
+  name = StringField()
+```
+> /tempelate/about.html
+```
 {% import "bootstrap/wtf.html" as wtf %}
         {{ wtf.quick_form(form, button_map={'submit':'primary'} }}
 ```
@@ -39,8 +41,8 @@ The styles and format of form are defined in wtf.html, it's in your Flask-bootst
 e.g.: *C:\git\tianya\venv\Lib\site-packages\flask_bootstrap\templates\bootstrap\wtf.html
 
 ## Install and how to use
-1. simple copy my _wtf4.html to you Flask template directly
-*C:\git\tianya\app\templates\
+1. simple copy '_wtf4.html' to you Flask template directly
+  e.g. C:\git\tianya\app\templates\
 2. use the macro in your html like this
 > /tempelate/about.html
 ```
