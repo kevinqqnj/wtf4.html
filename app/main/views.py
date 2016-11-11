@@ -6,7 +6,7 @@ from . import main
 from .forms import CommentForm
 
 
-@main.route('/')
+@main.route('/', methods=['GET', 'POST'])
 @main.route('/about', methods=['GET', 'POST'])
 def about():
     form = CommentForm()
