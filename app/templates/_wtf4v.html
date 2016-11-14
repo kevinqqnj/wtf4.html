@@ -31,8 +31,8 @@
                     form_type="basic",
                     horizontal_columns=('lg', 2, 10),
                     button_map={},
-                    fa_addon=""
-                    
+                    fa_addon="",
+                    validators={}
                     ) %}
 
 {# this is a workaround hack for the more straightforward-code of just passing required=required parameter. older versions of wtforms do not have
@@ -67,8 +67,8 @@ the necessary fix for required=False attributes, but will also not set the requi
 
   {# note: same issue as above - should check widget, not field type #}
   {% call _hz_form_wrap(horizontal_columns, form_type, True, required=required) %}
-    {{field(class='btn btn-%s' % button_map.get(field.name, 'default'),
-            **field_kwargs)}}
+    {{ field(class='btn btn-%s' % button_map.get(field.name, 'default'),
+            **field_kwargs) | safe }}
   {% endcall %}
 {%- elif field.type == 'FormField' -%}
 {# note: FormFields are tricky to get right and complex setups requiring
@@ -87,8 +87,15 @@ the necessary fix for required=False attributes, but will also not set the requi
     {%- endfor %}
   </fieldset>
 {% else -%}
-  <div class="form-group {%- if field.errors %} has-danger{% endif -%}">
-  <div class="input-group {%- if field.flags.required %} required{% endif -%}">
+
+
+  <div class="form-group" {% if validators -%}
+      v-bind:class="['form-group', {'has-danger':$validation.{{field.name}}.invalid,
+                    'has-success':$validation.{{field.name}}.valid && $validation.{{field.name}}.modified}]"{% endif -%}
+      >
+  <div class="input-group {% if field.errors %} has-danger{% endif -%}
+                         {%- if field.flags.required %} required{% endif -%}
+  ">
       {%- if fa_addon %}
         <span class="input-group-addon"><i class="fa {{ fa_addon }} fa-fw"></i></span>
       {% endif %}
@@ -126,16 +133,19 @@ the necessary fix for required=False attributes, but will also not set the requi
         {% if field.type == 'FileField' %}
           {{field(**kwargs)|safe}}
         {% else %}
-        	{%if field.errors %} {{field(class="form-control form-control-danger", **kwargs)|safe}}
-            {% else %} {{field(class="form-control form-control-success", **kwargs)|safe}}
-            {% endif %}
+          {{field(class="form-control", **kwargs)|safe}}
         {% endif %}
     </div>
           {%- if field.errors %}
           {%- for error in field.errors %}
-           <small class="form-text text-warning">{{error}}</small>
+           <small class="form-text text-danger">{{error}}</small>
            {%- endfor %}
-        {%- elif field.description -%}
+        {%- elif validators['feedback'] -%}
+           {%- for k,v in validators['feedback'].iteritems() %}
+           <span class="form-control-feedback" v-if="$validation.{{ field.name }}.{{ k }}">{{ v }}</span>
+              {%- endfor %}
+        {%- endif %}
+              {%- if field.description -%}
         <small class="form-text text-muted">{{field.description|safe}}</small>
          {%- endif %}
       {%- endif %}
@@ -191,6 +201,7 @@ action="" is what we want, from http://www.ietf.org/rfc/rfc2396.txt:
 {%- else %}
   {% set _ = _enctype.append(enctype) %}
 {%- endif %}
+<validator name="validation">
 <form
   {%- if action != None %} action="{{action}}"{% endif -%}
   {%- if id %} id="{{id}}"{% endif -%}
@@ -212,11 +223,13 @@ action="" is what we want, from http://www.ietf.org/rfc/rfc2396.txt:
                     form_type=form_type,
                     horizontal_columns=horizontal_columns,
                     button_map=button_map,
-                    fa_addon=form.fa_addon[field.name])
+                    fa_addon=form.fa_addon[field.name],
+                    validators=form.validators[field.name]
 
-                    }}
+              ) }}
     {%- endif %}
   {%- endfor %}
 
 </form>
+</validator>
 {%- endmacro %}

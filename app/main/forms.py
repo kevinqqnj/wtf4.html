@@ -5,6 +5,7 @@ from flask_wtf import Form
 from wtforms import StringField, TextAreaField, BooleanField, SelectField,\
     SubmitField, PasswordField
 from wtforms.validators import Length, Email, Regexp, DataRequired
+from .helper import _render_kw
 
 
 
@@ -13,7 +14,7 @@ class CommentForm(Form):
     #                                                               "style": "background: url(/static/login-locked-icon.png) no-repeat 15px center;text-indent: 28px"})
     name = StringField('', validators=[Length(0, 64)], render_kw={"placeholder": "your name",})
     email = StringField('', description='* We\'ll never share your email with anyone else.', validators= \
-        [DataRequired(), Length(4, 64), Email(message=u"邮件格式有误")], render_kw={"placeholder": "yourname@example.com"})
+        [DataRequired(), Length(4, 64), Email(message=u"邮件格式有误")], render_kw={"placeholder": "you@example.com"})
     comment = TextAreaField('', description=u"* 请提出宝贵意见和建议", validators=[DataRequired()],
                             render_kw = {"placeholder": "input your comments here"})
     submit = SubmitField(u'提交')
@@ -22,3 +23,39 @@ class CommentForm(Form):
         'email': 'fa-envelope-o',
         'name': 'fa-user-o',
     }
+
+class CommentFormV(Form):
+    # define validators and feedback msg for Vue-validator. 前端JS校验
+    validators = {
+        'name': {
+         },
+        'email': {
+        },
+        'comment': {
+            'feedback': {
+                'minlength': u'您的评论太短了, min length is 3',
+                'maxlength': u'max length is 10'
+            }
+        },
+    }
+    name = StringField('', validators=[Length(0, 64)], render_kw={"placeholder": "your name"})
+
+    email = StringField('', description='* We\'ll never share your email with anyone else.', validators= \
+        [DataRequired(), Length(4, 64), Email(message=u"邮件格式有误")], render_kw={"placeholder": "you@example.com"})
+    comment = TextAreaField('', description=u"* 请提出宝贵意见和建议", validators=[DataRequired()],
+                            render_kw = {
+                                "placeholder": "input your comments here, 3~10 chars",
+                                "v-validate:comment": "{minlength: 3, maxlength: 10}",
+                                "initial": 'off'
+                            })
+    submit = SubmitField(u'提交', render_kw = {
+    			'@click': "submitMethod",
+                    'v-bind:class': "[{'disabled': $validation.invalid && $validation.touched}]"
+                    })
+    # FontAwesome css, show icon as prefix of fields
+    fa_addon = {
+        'email': 'fa-envelope-o',
+        'name': 'fa-user-o',
+    }
+
+

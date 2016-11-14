@@ -1,0 +1,34 @@
+﻿<!--by Kevin ZHANG-->
+<!--17197602@qq.com-->
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_wtf4.html" as _wtf4 %}
+
+
+{% block title %}wtf.html for Bootstrap 4{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <meta charset="utf-8">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css">
+{% endblock %}
+
+{% block content %}
+
+
+    <div id="comment_div" class="row comment-form" style="margin-top: 80px">
+        <div class="col-lg-6 offset-lg-3">
+            <h3 class="panel-title">
+                <a href="#" ><i class="fa fa-pencil">&nbsp</i>Bootstrap 4 style</a></h3>
+            {{ _wtf4.quick_form(form, form_type="basic", button_map={'submit':'primary', }, id='comment_form') }}
+        </div>
+    </div>
+
+
+
+{% endblock %}
+
+
+
