@@ -2,13 +2,15 @@
 wtf.html (Flask-wtf & Flask-bootstrap) adapted for Bootstrap4 styles. 
 
 
-##### [Live Demo](http://tianya.heroku.com/about)
+##### [Live Demo](http://tianya.heroku.com/wtf)
 
 
 ## Purpose
 To quickly render out form with latest Bootstrap4 styes, by customized wtf.html (part of Flask-Bootstrap)
 ##### snapshot
 ![](http://img.blog.csdn.net/20161111105913670?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
+
+![](http://img.blog.csdn.net/20161115104209611?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
 
 
 
@@ -21,7 +23,7 @@ class CommentForm(Form):
   ...
 ```
 
-> /tempelate/about.html
+> /tempelate/demo.html
 ```
 {% import "bootstrap/wtf.html" as wtf %}
     {{ wtf.quick_form(form, button_map={'submit':'primary'} }}
@@ -88,3 +90,36 @@ class="form-text text-warning">
 ```
 You can add/change any more CSS as you want, in _wtf4.html
 
+## use Vue-validator to do validation on client side (_wtf4.html)
+
+nothing change in your forms.py
+
+define your validation rule in your html：
+
+> app/template/demo-v.html
+```
+{% import "_wtf4v.html" as _wtf4v %}
+
+            {{ _wtf4v.quick_form(form, form_type="basic", button_map={'submit':'primary', }, id='form',
+            fa_map={'email': 'fa-envelope-o','name': 'fa-user-o',},
+            validator_map={
+                'comment': {
+                    'validators': '{minlength:3, maxlength:10}',
+                    'feedbacks': {'minlength':'your comments need more than 3 chars', 'maxlength':'your comments should not exceed 10 chars'}
+                    },
+                'name':  {
+                    'validators': '{required: true}',
+                    'feedbacks': {'required':'name is required'}
+                    },
+                'email':  {
+                    'validators': '{required: true}',
+                    'feedbacks': {'required':'email is required'}
+                    },
+                'submit': {
+                   	'@click': 'submitMethod',
+                    'v-bind:class': "[{'disabled': $validation.invalid && $validation.touched}]"
+                    }
+                }
+            ) }}
+
+```
