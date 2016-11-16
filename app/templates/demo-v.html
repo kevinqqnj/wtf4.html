@@ -21,23 +21,40 @@
             <h3 class="panel-title">
                 <a href="#" ><i class="fa fa-pencil">&nbsp</i>wtf.quick_form with Validator </a></h3>
             {{ _wtf4v.quick_form(form, form_type="basic", button_map={'submit':'primary', }, id='form',
-            fa_map={'email': 'fa-envelope-o','name': 'fa-user-o',},
+            fa_map={
+            	'email': 'fa-envelope-o',
+            	'name': 'fa-user-o',
+           	'password': 'fa-key', 	
+           	'passwordrepeat': 'fa-key', 	
+            	},
             validator_map={
                 'comment': {
                     'validators': '{minlength:3, maxlength:10}',
                     'feedbacks': {'minlength':'your comments need more than 3 chars', 'maxlength':'your comments should not exceed 10 chars'}
                     },
-                'name':  {
+                 'name':  {
                     'validators': '{required: true}',
-                    'feedbacks': {'required':'name is required'}
+                    'feedbacks': {'required':'name is required'},
                     },
                 'email':  {
-                    'validators': '{required: true}',
-                    'feedbacks': {'required':'email is required'}
+                    'validators': '{email:true}',
+                    'feedbacks': {'email':'email format is wrong'},
                     },
-                'submit': {
-                   	'@click': 'submitMethod',
-                    'v-bind:class': "[{'disabled': $validation.invalid && $validation.touched}]"
+                'password':  {
+                    'validators': '{passw:true, minlength:4, maxlength:8}',
+                    'feedbacks': { 'passw':'passsword need in (A-Z, a-z, 0-9, _)','minlength':'password too short', 'maxlength':'password too long' },
+                   '_cv': { 'cv_password': 'password not match' },  
+                    '@valid': 'onPasswordValid'
+                    },
+                'passwordrepeat':  {
+                    'validators': '{required:true}',
+                    'feedbacks': { 'required':'repeat passsword' },
+                   '_cv': { 'cv_password': 'password not match' },  
+                    '@valid': 'onPasswordValid'
+                    },
+                  'submit': {
+                   '@click': 'submitMethod',
+                    'v-bind:class': "[{'disabled': ($validation.invalid && $validation.touched) || !cv_password }]"
                     }
                 }
             ) }}
@@ -53,17 +70,52 @@
     <script src="//cdn.bootcss.com/vue-validator/2.1.3/vue-validator.min.js" type="text/javascript" charset="utf-8"></script>
     {#    <script src="https://unpkg.com/vue-validator@3.0.0-alpha.1/dist/vue-validator.min.js"></script>#}
     <script>
-        function stopDefault( e ) {
+ 	function _stopDefault( e ) {
             if ( e && e.preventDefault )
                 e.preventDefault();
             else
                 window.event.returnValue = false;
             return false;
         }
+//匹配0-9之间的手机号,并且长度是11位
+Vue.validator('mobile', function (val) {
+  return /1[0-9]{10}$/.test(val)
+});
+//添加一个密码验证
+//匹配6-20位的任何字类字符，包括下划线。与“[A-Za-z0-9_]”等效。
+Vue.validator('passw', function (val) {
+  return /^(\w)+$/.test(val)
+});
+Vue.validator('email', function (val) {
+  return /^[A-Za-z{1}[.\w]+@(\w+)[.]{1}\w+$/.test(val)
+});
 
-        new Vue({
+
+        var vm = new Vue({
             el: '#app',
+            data: {
+            	cv_password: true	// custom_validator
+            },
             methods:{
+		onPasswordValid: function () {
+		console.log('this is function onValid');
+		try
+ 		 {
+		var self=this;
+		console.log('==========self password invalid: '+ self.$validation.password.invalid +', modified:' + self.$validation.password.modified  );
+		if (self.$validation.password.modified) {
+		     console.log('==== now valid: '+ $('#password').val() );
+		if ( ($('#password').val() ==$('#passwordrepeat').val() ) || ($('#passwordrepeat').val() == '') ) 
+			{self.cv_password = true}
+		else {self.cv_password = false};
+		     }  		    
+		  }
+		catch(err)
+		  {
+  		//在这里处理错误
+ 		 console.log('========== ERR:' + err)
+  		}		    
+	},		    
                 submitMethod:function (e) {
                     var self = this;
                     /**
@@ -72,13 +124,11 @@
                      */
                     self.$validate(true,function () {
                         /*如果所有条件都是false*/
-                        if(!self.$validation.invalid){
-                            alert("Validate pass! Now submit...");
-                            document.getElementById("form").submit()
+                        if(!self.$validation.invalid && self.cv_password){
+                            alert("Validate pass! Now submit to server...");
                         }
-                        //                   else { alert("pls fill fields"); }
+                        else { _stopDefault(e); 	}		// if not validated, stop submit action
                     });
-                    stopDefault(e); 	// if not validated, stop submit action
                 }
             }
         });
