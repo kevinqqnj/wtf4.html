@@ -90,7 +90,7 @@ class="form-text text-warning">
 You can add/change any more CSS as you want, in _wtf4.html
 
 
-## use Vue-validator to do validation on client side (_wtf4.html)
+## use Vue-validator to do validation on client side (_wtf4v.html)
 
 According to MVVM，forms.py belongs to Model, so just define the funciton of form fields, no need to worry about how it's displayed in user's web browser.
 
