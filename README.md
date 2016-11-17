@@ -163,4 +163,36 @@ Then define your validation rule and CSS style in your html. Also include any ja
 
 > try \_wtf4addClear.html
 
- [Demo](http://tianya.heroku.com/wtf_addClear)
+ [Demo](http://tianya.heroku.com/wtf/4addClear)
+
+Thanks to [bootstrap-add-clear v1.0.7](http://github.com/gesquive/bootstrap-add-clear)
+> Note1: increase onBlur Timeout, otherwise conflict with onClick. Also move "x" span before <input>.
+Note: don't apply this js to 'submit' type
+```
+      $this.on('blur.addclear', function() {
+        var self = this;
+        if (options.hideOnBlur) {
+          setTimeout(function() {
+            $(self).siblings(".add-clear-x").hide();
+          }, 200);  // original is 50
+    };
+```
+
+>```    
+Usage of bootstrap-add-clear.js:
+$("input").addClear({top : -2, right : 6});
+>
+// Example onClear option usage
+$(":input").addClear({
+  onClear: function(){
+    alert("call back!");
+  }
+});
+>
+// Example font awesome icon usage
+$(":input").addClear({
+    symbolClass: "fa fa-times-circle"
+})
+```  
+
+> Note2: Bootstrap <label> need to set class="sr only".
