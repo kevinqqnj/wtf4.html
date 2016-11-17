@@ -2,16 +2,21 @@
 wtf.html (Flask-wtf & Flask-bootstrap) adapted for Bootstrap4 styles. 
 
 
-##### [Live Demo](http://tianya.heroku.com/wtf)
+## [Live Demo](http://tianya.heroku.com/wtf)
 
 
 ## Purpose
 To quickly render out form with latest Bootstrap4 styes, by customized wtf.html (part of Flask-Bootstrap)
-##### snapshot
+### snapshot
+
+#### with Bootstrap 4 style only
 ![](http://img.blog.csdn.net/20161111105913670?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
 
+#### with vue-validator
 ![](http://img.blog.csdn.net/20161116090216256?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
 
+#### with vue-validator and addClear button
+![](http://img.blog.csdn.net/20161117093324803?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
 
 
 ## Background
@@ -151,5 +156,11 @@ Then define your validation rule and CSS style in your html. Also include any ja
                     }
                 }
             ) }}
-
 ```
+
+
+## If you like to add Clear button in "input" element
+
+> try \_wtf4addClear.html
+
+ [Demo](http://tianya.heroku.com/wtf_addClear)
