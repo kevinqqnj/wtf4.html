@@ -1,0 +1,157 @@
+﻿<!--by Kevin ZHANG-->
+<!--17197602@qq.com-->
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_wtf4addClear.html" as _wtf4addClear %}
+
+
+{% block title %}wtf.html with validator for Bootstrap 4{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <meta charset="utf-8">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css">
+    
+    	<style type="text/css"> 
+	.has-danger .form-control-danger {
+		background-image:url(/static/img/has-danger.svg);
+		} 
+	.has-success .form-control-success {
+		background-image:url(/static/img/has-success.svg);
+		} 
+	</style> 
+    
+{% endblock %}
+
+{% block content %}
+    <div id="app" class="row comment-form" style="margin-top: 80px">
+            <h3 class="panel-title" align="center">
+                <a href="#" ><i class="fa fa-pencil">&nbsp</i>wtf.quick_form with Validator and add Clear button </a></h3>
+                <br/>
+          <div class="col-lg-6 offset-lg-3">
+ 
+            {{ _wtf4addClear.quick_form(form, form_type="basic", button_map={'submit':'primary', }, id='form',
+            fa_map={
+            	'email': 'fa-envelope-o',
+            	'name': 'fa-user-o',
+           	'password': 'fa-key', 	
+           	'passwordrepeat': 'fa-key', 	
+            	},
+            validator_map={
+                'comment': {
+                    'validators': '{minlength:3, maxlength:10}',
+                    'feedbacks': {'minlength':'your comments need more than 3 chars', 'maxlength':'your comments should not exceed 10 chars'}
+                    },
+                 'name':  {
+                    'validators': '{required: true}',
+                    'feedbacks': {'required':'name is required'},
+                    },
+                'email':  {
+                    'validators': '{email:true}',
+                    'feedbacks': {'email':'email format is wrong'},
+                    },
+                'password':  {
+                    'validators': '{passw:true, minlength:4, maxlength:8}',
+                    'feedbacks': { 'passw':'passsword need in (A-Z, a-z, 0-9, _)','minlength':'password too short', 'maxlength':'password too long' },
+                   '_cv': { 'cv_password': 'password not match' },  
+                    '@valid': 'onPasswordValid'
+                    },
+                'passwordrepeat':  {
+                    'validators': '{required:true}',
+                    'feedbacks': { 'required':'repeat passsword' },
+                   '_cv': { 'cv_password': 'password not match' },  
+                    '@valid': 'onPasswordValid'
+                    },
+                  'submit': {
+                   '@click': 'submitMethod',
+                    'v-bind:class': "[{'disabled': ($validation.invalid && $validation.touched) || !cv_password }]"
+                    }
+                }
+            ) }}
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="http://cdn.jsdelivr.net/vue/1.0.28/vue.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="//cdn.bootcss.com/vue-validator/2.1.3/vue-validator.min.js" type="text/javascript" charset="utf-8"></script>
+    {#    <script src="https://unpkg.com/vue-validator@3.0.0-alpha.1/dist/vue-validator.min.js"></script>#}
+    <script src="/static/js/bootstrap-add-clear.js"></script>
+    
+    <script>
+ 	function _stopDefault( e ) {
+            if ( e && e.preventDefault )
+                e.preventDefault();
+            else
+                window.event.returnValue = false;
+            return false;
+        }
+//匹配0-9之间的手机号,并且长度是11位
+Vue.validator('mobile', function (val) {
+  return /1[0-9]{10}$/.test(val)
+});
+//添加一个密码验证
+//匹配任何字类字符，包括下划线。与“[A-Za-z0-9_]”等效。
+// 允许 0位，因为长度由 minlength来检查
+Vue.validator('passw', function (val) {
+  return /^(\w)*$/.test(val)
+});
+Vue.validator('email', function (val) {
+  return /^[A-Za-z{1}[.\w]+@(\w+)[.]{1}\w+$/.test(val)
+});
+
+
+        var vm = new Vue({
+            el: '#app',
+            data: {
+            	cv_password: true	// custom_validator
+            },
+            methods:{
+		onPasswordValid: function () {
+		console.log('this is function onValid');
+		try
+ 		 {
+		var self=this;
+		console.log('==========self password invalid: '+ self.$validation.password.invalid +', modified:' + self.$validation.password.modified  );
+		if (self.$validation.password.modified) {
+		     console.log('==== now valid: '+ $('#password').val() );
+		if ( ($('#password').val() ==$('#passwordrepeat').val() ) || ($('#passwordrepeat').val() == '') ) 
+			{self.cv_password = true}
+		else {self.cv_password = false};
+		     }  		    
+		  }
+		catch(err)
+		  {
+  		//在这里处理错误
+ 		 console.log('========== ERR:' + err)
+  		}		    
+	},		    
+                submitMethod:function (e) {
+                    var self = this;
+                    /**
+                     * 验证目标表单元素。
+                     * true:验证所有
+                     */
+                    self.$validate(true,function () {
+                        /*如果所有条件都是false*/
+                        if(!self.$validation.invalid && self.cv_password){
+                            alert("Validate pass! Now submit to server...");
+                        }
+                        else { _stopDefault(e); 	}		// if not validated, stop submit action
+                    });
+                }
+            }
+        });
+
+// add Clear button inside of “input.addClear” elements
+$(".addClear").addClear({
+})
+
+    </script>
+
+{% endblock %}

@@ -15,7 +15,10 @@ def index():
      <br/>
      <br/>
     <a href="/demo-v"> Demo: wtf4v.html to render Vue-js validator form. Validate in both Client and Server</a>
-    </html>
+     <br/>
+     <br/>
+    <a href="/demo-addClear"> Demo: wtf4addClear.html with vue-validator, and add Clear button in input</a>
+   </html>
     """
     return page
 
@@ -35,3 +38,8 @@ def demo():
 def demo_v():
     form = CommentFormV()
     return render_template('demo-v.html', form=form)
+
+@main.route('/demo-addClear', methods=['GET', 'POST'])
+def demo_addClear():
+    form = CommentFormV()
+    return render_template('demo-addClear.html', form=form)
