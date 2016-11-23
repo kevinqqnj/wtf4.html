@@ -43,3 +43,7 @@ def demo_v():
 def demo_addClear():
     form = CommentFormV()
     return render_template('demo-addClear.html', form=form)
+
+@main.route('/vue3', methods=['GET', 'POST'])
+def vue3():
+    return render_template('vuevalidator3.html')

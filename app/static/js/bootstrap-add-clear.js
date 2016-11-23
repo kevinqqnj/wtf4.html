@@ -153,3 +153,21 @@
   };
 
 })(jQuery, window, document);
+
+/*
+Using Options
+
+$("input").addClear({top : -2, right : 6});
+
+// Example onClear option usage
+$(":input").addClear({
+  onClear: function(){
+    alert("call back!");
+  }
+});
+
+// Example font awesome icon usage
+$(":input").addClear({
+    symbolClass: "fa fa-times-circle"
+})	
+	*/

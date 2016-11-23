@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>validate timing example</title>
+    <script src="/static/vue2.js"></script>
+    <script src="/static/vue-validator3.js"></script>
+    <style>
+      input.invalid { border-color: red; }
+      .errors { color: red; }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+    <form method="post">
+      <validation name="registration" @submit="handleSubmit">
+        <h1>user registration</h1>
+        <div class="username">
+          <label for="username">username:</label>
+          <validity ref="username" field="username" :validators="{
+            required: { message: 'required you name !!' }
+          }">
+            <input id="username" name="username"  type="text" @blur="handleValidate">
+          </validity>
+        </div>
+        <div class="password">
+          <label for="password">password:</label>
+          <validity ref="password" field="password" group="passwordgroup"  
+          :validators="{
+            required: { message: 'required you new password !!' },
+            minlength: { rule: 4, message: 'your new password too short!!' }
+          }">
+            <input id="password" type="password" @blur="handleValidate" @input="handleValidate">
+          </validity>
+        </div>
+        <div class="confirm">
+          <label for="confirm">confirm password:</label>
+          <validity ref="confirm" field="confirm" group="passwordgroup" 
+          :validators="{
+            required: { message: 'required you confirm password !!' },
+            confirm: { rule: true, message: 'your confirm password incorrect 222' }
+          }">
+            <input id="confirm" type="password" @blur="handleValidate" @input="handleValidate">
+          </validity>
+        </div>
+        <div class="errors">
+          <p v-for="error in errors"><span v-text="error.message"></span></p>
+        </div>
+        <input type="submit" value="register" :disabled=" !valid ">
+<!--<input type="submit" value="register" :disabled="!validated || !valid ">-->
+        <br>
+        myTarget: <span v-text="myTarget "></span>
+        valid: <span v-text="valid " :class="[{errors:!valid}]"></span>
+        myV: <span v-text="myV" :class="[{errors:!myV}]"></span>
+        <br>
+           $validation: <pre v-text="$validation"></pre>
+ 
+      </validation>
+      </form>
+    </div>
+    <script>
+      var vm=new Vue({
+        data: {
+          validated: false,
+          myV: false,
+          myTarget: null,
+        },
+        computed: 
+        	VueValidator.mapValidation({
+          valid: '$validation.registration.valid',
+          errors: '$validation.registration.errors'
+        }),
+
+        validators: {
+          confirm: function (val) {
+ 	if (this.$refs.confirm.$el.value != "") {
+	return val === this.$refs.confirm.$el.value
+	}
+          },
+          confirm: function (val) {
+ 	if ( val != "") {
+ 	return val === this.$refs.password.$el.value
+//	return document.getElementById("password").value === document.getElementById("confirm").value 
+	}
+          }
+        },
+        methods: {
+          handleSubmit: function (e) {
+         this.$refs.username.validate();
+          this.myV = this.$validation.registration.valid && this.$refs.username.modified && this.$refs.password.modified
+            	 && this.$refs.confirm.modified;
+            if ( !this.valid || !this.myV) {
+              e.preventDefault()
+            }
+            else alert('validate PASS, submit!')
+          },
+          handleValid: function() {
+                   this.myV = this.$validation.registration.valid && this.$refs.username.modified && this.$refs.password.modified
+            	 && this.$refs.confirm.modified;
+          },
+          handleValidate: function (e) {
+  //         var self = this;
+            this.myTarget = e.target.id;
+//            alert(self.target);
+             e.target.$validity.validate();
+              this.validated = true;
+              // 如果当前在 password 框，验证 confirm
+                      if (document.getElementById("confirm").value != "" && e.target.id ==="password") {
+                      console.log('modify PASSWORD, validate CONFIRM again');
+            	this.$refs.confirm.validate();
+            };
+                        this.myV = this.$validation.registration.valid && this.$refs.username.modified && this.$refs.password.modified && this.$refs.confirm.modified;
+
+          },
+
+        }
+      }).$mount('#app')
+    </script>
+  </body>
+</html>
